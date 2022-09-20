@@ -145,6 +145,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 }
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	// defer untrace(trace("ParseExpressionStatement: " + p.curToken.Literal))
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
 
 	stmt.Expression = p.parseExpression(LOWEST)
@@ -157,29 +158,36 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
-	prefix := p.prefixParseFns[p.curToken.Type]
-	if prefix == nil {
+	// defer untrace(trace("ParseExpression: " + p.curToken.Literal))
+	prefixParseFn := p.prefixParseFns[p.curToken.Type]
+	if prefixParseFn == nil {
 		p.noPrefixParseFnError(p.curToken.Type)
 		return nil
 	}
 
-	leftExp := prefix()
+	leftExp := prefixParseFn()
 
-	// ここむずい。ここが優先度付けの肝っぽい。
+	// precedence = 左側にある演算子の優先度
+	// peekTokenのprecedenceが高い場合(=だいたいinfixOp)、leftExpをpeekToken(=infix)のLeftに紐付ける
+	// => 右結合ルート
+	//
+	// そうでない場合、ただleftExpをreturnする
+	// => 左結合ルート?
 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
-		infix := p.infixParseFns[p.peekToken.Type]
-		if infix == nil {
+		infixParseFn := p.infixParseFns[p.peekToken.Type]
+		if infixParseFn == nil {
 			return leftExp
 		}
 
 		p.nextToken()
-		leftExp = infix(leftExp)
+		leftExp = infixParseFn(leftExp)
 	}
 
 	return leftExp
 }
 
 func (p *Parser) parsePrefixExpression() ast.Expression {
+	// defer untrace(trace("ParsePrefixExpression" + p.curToken.Literal))
 	expression := &ast.PrefixExpression{
 		Token:    p.curToken,
 		Operator: p.curToken.Literal,
@@ -198,6 +206,7 @@ func (p *Parser) noPrefixParseFnError(t token.TokenType) {
 }
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	// defer untrace(trace("ParseInfixExpression" + p.curToken.Literal))
 	expression := &ast.InfixExpression{
 		Token:    p.curToken,
 		Operator: p.curToken.Literal,
