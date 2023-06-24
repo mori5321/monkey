@@ -1,0 +1,6 @@
+- [ ] 学習用のnoteを書く
+    - [ ] 全体像をまとめる
+        - [ ] core(lexer, parser, evaluator)
+        - [ ] sub(ast, token)
+        - [ ] utils(repl)
+    - [ ] Pratt Parser についてまとめる
