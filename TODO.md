@@ -4,3 +4,5 @@
         - [ ] sub(ast, token)
         - [ ] utils(repl)
     - [ ] Pratt Parser についてまとめる
+        -  参考資料
+            - https://tech.anti-pattern.co.jp/top-down-operator-precedence-zai-gui-xia-jiang-gou-wen-jie-xi-pratt-parser-niokeruexpression-shi-nojie-xi-ast-chou-xiang-gou-wen-mu-gou-zhu-chu-li-wozhui-u/
