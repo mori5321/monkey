@@ -126,3 +126,19 @@ func TestNextToken3(t *testing.T) {
 
 	runTokenTestCase(t, input, tests)
 }
+
+func TestNextToken4(t *testing.T) {
+	input := `
+		"foobar";
+		"foo bar";
+	`
+
+	tests := []Expected{
+		{token.STRING, "foobar"},
+		{token.SEMICOLON, ";"},
+		{token.STRING, "foo bar"},
+		{token.SEMICOLON, ";"},
+	}
+
+	runTokenTestCase(t, input, tests)
+}
